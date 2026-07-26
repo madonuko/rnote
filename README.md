@@ -40,6 +40,7 @@ Written in Rust and GTK4.
 - Save and load the documents in the native `.rnote` file format
 - Tabs to work on multiple documents at the same time
 - Autosave, printing
+- CLI for automation
 
 **Disclaimer**
 
@@ -106,6 +107,16 @@ $ flatpak mask --remove com.github.flxzt.rnote
 ```
 
 To update to the latest version again, unpin and run `flatpak update`.
+
+## CLI
+
+In addition to the UI, a CLI tool is available, providing basic handling of .rnote files for automation.
+It is included in the flatpak.
+To execute it, run:
+
+```bash
+flatpak run --command=rnote-cli com.github.flxzt.rnote help
+```
 
 ## Screenshots
 
@@ -220,6 +231,7 @@ If you have drawn something cool in Rnote and want to share it, submit a PR to a
         <img alt="Love" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/love.png" height="400">
         <img alt="Suits" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/suits.png" height="400">
         <img alt="Nature's cat" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/natureza_gato.png" height="400">
+        <img alt="Donald Duck" src="./misc/drawings/donald.png" height="400">
 </div><br>
 
 ## Building

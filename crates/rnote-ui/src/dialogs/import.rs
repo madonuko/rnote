@@ -11,6 +11,7 @@ use gtk4::{Builder, Button, FileDialog, FileFilter, Label, ToggleButton, gio, gl
 use gtk4::{graphene, gsk};
 use hayro::hayro_syntax;
 use num_traits::ToPrimitive;
+use p2d::math::Vector2;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
 use std::sync::Arc;
 use tracing::{debug, error};
@@ -242,7 +243,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     appwindow: &RnAppWindow,
     canvas: &RnCanvas,
     input_file: gio::File,
-    target_pos: Option<na::Vector2<f64>>,
+    target_pos: Option<Vector2>,
 ) -> anyhow::Result<bool> {
     let (password, cancel) = pdf_encryption_check_and_dialog(appwindow, &input_file).await;
     if cancel {
@@ -351,7 +352,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }
     ));
 
-    pdf_import_bitmap_scalefactor_row.connect_changed(clone!(
+    pdf_import_bitmap_scalefactor_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |row| {
@@ -378,7 +379,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }
     ));
 
-    pdf_import_width_row.connect_changed(clone!(
+    pdf_import_width_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |row| {
@@ -440,11 +441,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     // pdf info
     pdf_info_label.set_label(
             &format!("<b>{}  </b>{file_name}\n<b>{}  </b>{title}\n<b>{}  </b>{author}\n<b>{}  </b>{mod_date}\n<b>{}  </b>{n_pages}\n",
-                &gettext("File name:"),
-                &gettext("Title:"),
-                &gettext("Author:"),
-                &gettext("Modification date:"),
-                &gettext("Pages:"))
+                gettext("File name:"),
+                gettext("Title:"),
+                gettext("Author:"),
+                gettext("Modification date:"),
+                gettext("Pages:"))
         );
 
     // Configure pages spinners
@@ -483,6 +484,9 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
             );
         }
     }));
+
+    // set focus on enter button for quick confirmation
+    dialog.set_focus(Some(&import_pdf_button_confirm));
 
     // Present than wait for a response from the dialog
     dialog.present(appwindow.root().as_ref());
@@ -588,7 +592,7 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     dpi_row.set_value(xopp_import_prefs.dpi);
 
     // Update preferences
-    dpi_row.connect_changed(clone!(
+    dpi_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |row| {
@@ -632,6 +636,8 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
             );
         }
     }));
+
+    dialog.set_focus(Some(&import_xopp_button_confirm));
 
     // Present than wait for a response from the dialog
     dialog.present(appwindow.root().as_ref());
