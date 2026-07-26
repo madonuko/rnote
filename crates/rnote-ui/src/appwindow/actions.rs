@@ -152,31 +152,9 @@ impl RnAppWindow {
         for (i, setter) in color_setters.into_iter().enumerate() {
             let action = gio::SimpleAction::new(&format!("set-color-{}", i + 1), None);
             self.add_action(&action);
-            action.connect_activate(clone!(
-                #[weak(rename_to=appwindow)]
-                self,
-                move |_, _| {
-                    if let Some(widget) = GtkWindowExt::focus(&appwindow)
-                        .and_then(|w| w.dynamic_cast::<gtk4::Editable>().ok())
-                    {
-                        widget.delete_selection();
-                        let mut p = widget.position();
-                        widget.insert_text(&format!("{}", i + 1), &mut p);
-                        widget.set_position(p);
-                        return;
-                    }
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-                    if canvas.engine_ref().is_typewriter_in_progress() {
-                        let widget_flags =
-                            canvas.engine_mut().text_insert(format!("{}", i + 1), None);
-                        appwindow.handle_widget_flags(widget_flags, &canvas);
-                    } else {
-                        setter.set_active(true);
-                    }
-                }
-            ));
+            action.connect_activate(clone!(move |_, _| {
+                setter.set_active(true);
+            }));
         }
 
         let action_drawing_pad_pressed_button_0 =
@@ -1241,7 +1219,7 @@ impl RnAppWindow {
         (1..=9).for_each(|i| {
             app.set_accels_for_action(
                 &format!("win.set-color-{i}"),
-                &[&format!("{i}"), &format!("KP_{i}")],
+                &[&format!("{i}"), &format!("<Ctrl>KP_{i}")],
             )
         });
 
